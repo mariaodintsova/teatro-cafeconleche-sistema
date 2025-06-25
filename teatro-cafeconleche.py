@@ -13,14 +13,17 @@ def mostrar_menu():
     print("3.- Mostrar stock de funciones.")
     print("4.- Salir.")
 
-
 def comprar_entrada():
     """Permite la compra de una entrada verificando todas las condiciones"""
     global compradores, stock_funcion1, stock_funcion2, vendidas_funcion1, vendidas_funcion2
     
     print("\n-- Comprar entrada a Cats --")
     
-    nombre = input("Nombre del comprador: ")
+    nombre = input("Nombre del comprador: ").strip()
+    
+    if not nombre:
+        print("Error: el nombre no puede estar vacío.")
+        return
     
     if nombre in compradores:
         print(f"Error: el comprador {nombre} ya tiene una entrada.")
@@ -80,6 +83,7 @@ def cambio_funcion():
             compradores[nombre] = 1
             print(f"Cambio exitoso. Ahora está en función 1.")
         elif funcion_nueva == 2 and vendidas_funcion2 < stock_funcion2:
+
             vendidas_funcion1 -= 1
             vendidas_funcion2 += 1
             compradores[nombre] = 2
@@ -99,13 +103,31 @@ def mostrar_stock():
     print(f"Función 2 (Sábado): Disponibles {stock_funcion2 - vendidas_funcion2}, Vendidas {vendidas_funcion2}")
 
 
+def generar_reporte_completo():
+    """Genera un reporte completo de todas las ventas"""
+    global compradores, vendidas_funcion1, vendidas_funcion2
+    
+    print("\n-- REPORTE COMPLETO DE VENTAS --")
+    print(f"Total de entradas vendidas: {len(compradores)}")
+    print(f"Función 1 (Viernes): {vendidas_funcion1} vendidas")
+    print(f"Función 2 (Sábado): {vendidas_funcion2} vendidas")
+    
+    if compradores:
+        print("\nLista de compradores:")
+        for nombre, funcion in sorted(compradores.items()):
+            dia = "Viernes" if funcion == 1 else "Sábado"
+            print(f"  - {nombre}: Función {funcion} ({dia})")
+    else:
+        print("\nNo hay compradores registrados.")
+
+
 def main():
     """Función principal que ejecuta el programa"""
     while True:
-        mostrar_menu()
-        
         try:
-            opcion = input("Seleccione una opción: ")
+            mostrar_menu()
+            
+            opcion = input("Seleccione una opción: ").strip()
             
             if opcion == '1':
                 comprar_entrada()
@@ -116,13 +138,19 @@ def main():
             elif opcion == '4':
                 print("Programa terminado...")
                 break
+            elif opcion == '5':
+                # Opción oculta para administradores
+                generar_reporte_completo()
             else:
                 print("Debe ingresar una opción válida!!")
                 
+        except KeyboardInterrupt:
+            print("\n\nPrograma interrumpido por el usuario.")
+            print("Programa terminado...")
+            break
         except Exception as e:
             print(f"Error inesperado: {e}")
             print("Por favor, intente nuevamente.")
-
 
 if __name__ == "__main__":
     main()
